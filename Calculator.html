@@ -25,12 +25,16 @@
         function calculateTerminalEnergy(initialVelocity, projectileMass, coefficientOfDrag,
             surfaceArea, terminalEnergyLimit, airDensity) {
 
-            var time = 0, timeStep = 0.001, distanceTraveled = 0, currentEnergy = 100, currentVelocity = 1000;
+            var time = 0, timeStep = 0.001, distanceTraveled = 0, currentEnergy = 100, currentVelocity = 1000, initialEnergy = 100;
 
             currentEnergy = energy(initialVelocity, projectileMass);
             currentVelocity = initialVelocity;
+            initialEnergy = currentEnergy;
 
             document.getElementById("MuzzleEnergy").innerHTML = "Muzzle Energy: " + currentEnergy.toFixed(2) + "J";
+            var tableRef = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+
+            tableRef.innerHTML = "";
 
 
             while (currentEnergy >= terminalEnergyLimit) {
@@ -43,11 +47,39 @@
                 currentEnergy = energy(currentVelocity, projectileMass);
                 time += timeStep;
 
+
+                var newRow = tableRef.insertRow(tableRef.rows.length);
+
+                var timeCell = newRow.insertCell(0);
+                var distanceCell = newRow.insertCell(1);
+                var energyCell = newRow.insertCell(2);
+
+                timeCell.appendChild(document.createTextNode((time).toFixed(3)));
+                distanceCell.appendChild(document.createTextNode((distanceTraveled).toFixed(3)));
+                energyCell.appendChild(document.createTextNode((currentEnergy).toFixed(3)));
             }
 
             document.getElementById("MED").innerHTML = "MED: " + toFeet(distanceTraveled).toFixed(2) + "ft. (" + distanceTraveled.toFixed(2) + "m)";
         }
     </script>
+
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
 </head>
 <body>
 
@@ -56,14 +88,17 @@
     </a>
     <h2>Terminal Energy Calculator</h2>
 
-    Initial Velocity (m/s): <input type="number" name="initialVelocity" value="106.3" step="0.01" min="0" required><br> <!--0-->
-    Projectile Mass (kg): <input type="number" name="projectileMass" value="0.0002" step="0.000001" min="0" required><br> <!--1-->
-    Terminal Energy Limit (J): <input type="number" name="givenTELimit" value="0.8" step="0.1" min="0" required><br> <!--2-->
-    Coefficient of Drag: <input type="number" name="dragCoefficient" value="0.4864074" step="0.0000001" min="0" required><br> <!--3-->
-    Surface Area (sq. m): <input type="number" name="surfaceArea" value="0.0000282743" step="0.0000000001" min="0" required><br> <!--4-->
-    Air Density (kg. / m^2): <input type="number" name="airDensity" value="1.225" step="0.0001" min="0" required><br> <!--5-->
+    <table>
+        <tr>
+            <td valign="top">
+                Initial Velocity (m/s): <input type="number" name="initialVelocity" value="106.3" step="0.01" min="0" required><br> <!--0-->
+                Projectile Mass (kg): <input type="number" name="projectileMass" value="0.0002" step="0.000001" min="0" required><br> <!--1-->
+                Terminal Energy Limit (J): <input type="number" name="givenTELimit" value="0.8" step="0.1" min="0" required><br> <!--2-->
+                Coefficient of Drag: <input type="number" name="dragCoefficient" value="0.4864074" step="0.0000001" min="0" required><br> <!--3-->
+                Surface Area (sq. m): <input type="number" name="surfaceArea" value="0.0000282743" step="0.0000000001" min="0" required><br> <!--4-->
+                Air Density (kg. / m^2): <input type="number" name="airDensity" value="1.225" step="0.0001" min="0" required><br> <!--5-->
 
-    <button type="button" onclick='calculateTerminalEnergy(
+                <button type="button" onclick='calculateTerminalEnergy(
                 document.getElementsByTagName("input")[0].value,
                 document.getElementsByTagName("input")[1].value,
                 document.getElementsByTagName("input")[3].value,
@@ -71,53 +106,79 @@
                 document.getElementsByTagName("input")[2].value,
                 document.getElementsByTagName("input")[5].value
                 )'>
-        calculate
-    </button>
+                    calculate
+                </button>
 
-    <p id="MED"></p>
-    <p id="MuzzleEnergy"></p><br />
+                <p id="MED"></p>
+                <p id="MuzzleEnergy"></p><br />
 
-    Common Projectiles<br /><br />
-    6mm BBs<br />
-    <button type="button" onclick='
+                Common Projectiles<br /><br />
+                6mm BBs<br />
+                <button type="button" onclick='
     document.getElementsByTagName("input")[1].value = 0.0002;
     document.getElementsByTagName("input")[3].value = 0.4864074;
     document.getElementsByTagName("input")[4].value = 0.0000282743;
     '>
-        0.2g
-    </button>
-    <button type="button" onclick='
+                    0.2g
+                </button>
+                <button type="button" onclick='
     document.getElementsByTagName("input")[1].value = 0.00025;
     document.getElementsByTagName("input")[3].value = 0.4864074;
     document.getElementsByTagName("input")[4].value = 0.0000282743;
     '>
-        0.25g
-    </button>
-    <button type="button" onclick='
+                    0.25g
+                </button>
+                <button type="button" onclick='
     document.getElementsByTagName("input")[1].value = 0.0003;
     document.getElementsByTagName("input")[3].value = 0.4864074;
     document.getElementsByTagName("input")[4].value = 0.0000282743;
     '>
-        0.3g
-    </button>
-    <button type="button" onclick='
+                    0.3g
+                </button>
+                <button type="button" onclick='
     document.getElementsByTagName("input")[1].value = 0.00032;
     document.getElementsByTagName("input")[3].value = 0.4864074;
     document.getElementsByTagName("input")[4].value = 0.0000282743;
     '>
-        0.32g
-    </button>
-    <button type="button" onclick='
+                    0.32g
+                </button>
+                <button type="button" onclick='
     document.getElementsByTagName("input")[1].value = 0.0004;
     document.getElementsByTagName("input")[3].value = 0.4864074;
     document.getElementsByTagName("input")[4].value = 0.0000282743;
     '>
-        0.4g
-    </button>
-    <br /> <br />
+                    0.4g
+                </button>
+                <br /> <br />
 
-    v0.1.0 - ©2018 <a href="http://www.airsoftrnd.com">www.airsoftrnd.com</a> 
-       
+                v0.1.0 - ©2018 <a href="http://www.airsoftrnd.com">www.airsoftrnd.com</a>
+            </td>
+
+            <td>
+                <table id="dataTable" style="width: 250px">
+                    <colgroup>
+                        <col span="1" style="width: 33%;">
+                        <col span="1" style="width: 33%;">
+                        <col span="1" style="width: 34%;">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <td>Time (s)</td>
+                            <td>Distance (m)</td>
+                            <td>Energy (J)</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
 
 </body>
 </html>
