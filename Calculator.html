@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="https://airsoftrnd.files.wordpress.com/2017/04/asrdlogowtextsm1.png">
+    <title>Terminal Energy Calculator</title>
+    <script>
+
+        function drag(velocity, mass, coefficientOfDrag, surfaceArea, airDensity)
+        { return ((0.5 * airDensity * velocity * velocity * coefficientOfDrag * surfaceArea) / mass) + 9.8; }
+
+        function energy(v, m)
+        { return 0.5 * m * Math.pow(v, 2); }
+
+        function velocity(e, m)
+        { return Math.sqrt((2 * e) / m); }
+
+        function toFeetPerSecond(v)
+        { return v * 3.28084; }
+
+        function toFeet(d)
+        { return d * 3.28084; }
+
+        function calculateTerminalEnergy(initialVelocity, projectileMass, coefficientOfDrag,
+            surfaceArea, terminalEnergyLimit, airDensity) {
+
+            var time = 0, timeStep = 0.001, distanceTraveled = 0, currentEnergy = 100, currentVelocity = 1000;
+
+            currentEnergy = energy(initialVelocity, projectileMass);
+            currentVelocity = initialVelocity;
+
+            document.getElementById("MuzzleEnergy").innerHTML = "Muzzle Energy: " + currentEnergy.toFixed(2) + "J";
+
+
+            while (currentEnergy >= terminalEnergyLimit) {
+
+                //FD = 1/2 (DC * DA * V2 * A)
+                deceleration = drag(currentVelocity, projectileMass, coefficientOfDrag, surfaceArea, airDensity);
+
+                distanceTraveled = distanceTraveled + (currentVelocity * timeStep);
+                currentVelocity = currentVelocity - (deceleration * timeStep);
+                currentEnergy = energy(currentVelocity, projectileMass);
+                time += timeStep;
+
+            }
+
+            document.getElementById("MED").innerHTML = "MED: " + toFeet(distanceTraveled).toFixed(2) + "ft. (" + distanceTraveled.toFixed(2) + "m)";
+        }
+    </script>
+</head>
+<body>
+
+    <a href="http://www.airsoftrnd.com">
+        <img src="https://airsoftrnd.files.wordpress.com/2017/04/asrdlogowtextsm1.png">
+    </a>
+    <h2>Terminal Energy Calculator</h2>
+
+    Initial Velocity (m/s): <input type="number" name="initialVelocity" value="106.3" step="0.01" min="0" required><br> <!--0-->
+    Projectile Mass (kg): <input type="number" name="projectileMass" value="0.0002" step="0.000001" min="0" required><br> <!--1-->
+    Terminal Energy Limit (J): <input type="number" name="givenTELimit" value="0.8" step="0.1" min="0" required><br> <!--2-->
+    Coefficient of Drag: <input type="number" name="dragCoefficient" value="0.4864074" step="0.0000001" min="0" required><br> <!--3-->
+    Surface Area (sq. m): <input type="number" name="surfaceArea" value="0.0000282743" step="0.0000000001" min="0" required><br> <!--4-->
+    Air Density (kg. / m^2): <input type="number" name="airDensity" value="1.225" step="0.0001" min="0" required><br> <!--5-->
+
+    <button type="button" onclick='calculateTerminalEnergy(
+                document.getElementsByTagName("input")[0].value,
+                document.getElementsByTagName("input")[1].value,
+                document.getElementsByTagName("input")[3].value,
+                document.getElementsByTagName("input")[4].value,
+                document.getElementsByTagName("input")[2].value,
+                document.getElementsByTagName("input")[5].value
+                )'>
+        calculate
+    </button>
+
+    <p id="MED"></p>
+    <p id="MuzzleEnergy"></p><br />
+
+    Common Projectiles<br /><br />
+    6mm BBs<br />
+    <button type="button" onclick='
+    document.getElementsByTagName("input")[1].value = 0.0002;
+    document.getElementsByTagName("input")[3].value = 0.4864074;
+    document.getElementsByTagName("input")[4].value = 0.0000282743;
+    '>
+        0.2g
+    </button>
+    <button type="button" onclick='
+    document.getElementsByTagName("input")[1].value = 0.00025;
+    document.getElementsByTagName("input")[3].value = 0.4864074;
+    document.getElementsByTagName("input")[4].value = 0.0000282743;
+    '>
+        0.25g
+    </button>
+    <button type="button" onclick='
+    document.getElementsByTagName("input")[1].value = 0.0003;
+    document.getElementsByTagName("input")[3].value = 0.4864074;
+    document.getElementsByTagName("input")[4].value = 0.0000282743;
+    '>
+        0.3g
+    </button>
+    <button type="button" onclick='
+    document.getElementsByTagName("input")[1].value = 0.00032;
+    document.getElementsByTagName("input")[3].value = 0.4864074;
+    document.getElementsByTagName("input")[4].value = 0.0000282743;
+    '>
+        0.32g
+    </button>
+    <button type="button" onclick='
+    document.getElementsByTagName("input")[1].value = 0.0004;
+    document.getElementsByTagName("input")[3].value = 0.4864074;
+    document.getElementsByTagName("input")[4].value = 0.0000282743;
+    '>
+        0.4g
+    </button>
+    <br /> <br />
+
+    v0.1.0 - ©2018 <a href="http://www.airsoftrnd.com">www.airsoftrnd.com</a> 
+       
+
+</body>
+</html>
