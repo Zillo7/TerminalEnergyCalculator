@@ -7,8 +7,8 @@
     <title>Terminal Energy Calculator</title>
     <script>
 
-        function drag(velocity, mass, coefficientOfDrag, surfaceArea, airDensity)
-        { return ((0.5 * airDensity * velocity * velocity * coefficientOfDrag * surfaceArea) / mass) + 9.8; }
+        function drag(velocity, mass, coefficientOfDrag, surfaceArea, airDensity, gravity)
+        { return ((0.5 * airDensity * velocity * velocity * coefficientOfDrag * surfaceArea) / mass) + gravity; }
 
         function energy(v, m)
         { return 0.5 * m * Math.pow(v, 2); }
@@ -25,11 +25,15 @@
         function calculateTerminalEnergy(initialVelocity, projectileMass, coefficientOfDrag,
             surfaceArea, terminalEnergyLimit, airDensity) {
 
-            var time = 0, timeStep = 0.001, distanceTraveled = 0, currentEnergy = 100, currentVelocity = 1000, initialEnergy = 100;
+            var time = 0, timeStep = 0.001, distanceTraveled = 0, currentEnergy = 100, currentVelocity = 1000, initialEnergy = 100, gravity = 9.8;
 
             currentEnergy = energy(initialVelocity, projectileMass);
             currentVelocity = initialVelocity;
             initialEnergy = currentEnergy;
+
+            var hopUsed = document.getElementById("hopupApplied").value;
+            if (hopUsed != "yes")
+            { gravity = 0; }
 
             document.getElementById("MuzzleEnergy").innerHTML = "Muzzle Energy: " + currentEnergy.toFixed(2) + "J";
             var tableRef = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
@@ -40,7 +44,7 @@
             while (currentEnergy >= terminalEnergyLimit) {
 
                 //FD = 1/2 (DC * DA * V2 * A)
-                deceleration = drag(currentVelocity, projectileMass, coefficientOfDrag, surfaceArea, airDensity);
+                deceleration = drag(currentVelocity, projectileMass, coefficientOfDrag, surfaceArea, airDensity, gravity);
 
                 distanceTraveled = distanceTraveled + (currentVelocity * timeStep);
                 currentVelocity = currentVelocity - (deceleration * timeStep);
@@ -83,20 +87,25 @@
 </head>
 <body>
 
-    <a href="http://www.airsoftrnd.com">
-        <img src="https://airsoftrnd.files.wordpress.com/2017/04/asrdlogowtextsm1.png">
-    </a>
-    <h2>Terminal Energy Calculator</h2>
+    <!--<a href="http://www.airsoftrnd.com" align="left"><img src="https://airsoftrnd.files.wordpress.com/2017/04/asrdlogowtextsm1.png" width="80" height="80"></a>-->
+    <h2 id="title">Terminal Energy Calculator</h2>
 
     <table>
         <tr>
             <td valign="top">
-                Initial Velocity (m/s): <input type="number" name="initialVelocity" value="106.3" step="0.01" min="0" required><br> <!--0-->
-                Projectile Mass (kg): <input type="number" name="projectileMass" value="0.0002" step="0.000001" min="0" required><br> <!--1-->
-                Terminal Energy Limit (J): <input type="number" name="givenTELimit" value="0.8" step="0.1" min="0" required><br> <!--2-->
-                Coefficient of Drag: <input type="number" name="dragCoefficient" value="0.4864074" step="0.0000001" min="0" required><br> <!--3-->
-                Surface Area (sq. m): <input type="number" name="surfaceArea" value="0.0000282743" step="0.0000000001" min="0" required><br> <!--4-->
-                Air Density (kg. / m^2): <input type="number" name="airDensity" value="1.225" step="0.0001" min="0" required><br> <!--5-->
+                <form>
+                    Initial Velocity (m/s): <input type="number" name="initialVelocity" value="106.3" step="0.01" min="0" required><br> <!--0-->
+                    Projectile Mass (kg): <input type="number" name="projectileMass" value="0.0002" step="0.00000001" min="0" required><br> <!--1-->
+                    Terminal Energy Limit (J): <input type="number" name="givenTELimit" value="0.8" step="0.001" min="0" required><br> <!--2-->
+                    Coefficient of Drag: <input type="number" name="dragCoefficient" value="0.4864074" step="0.0000001" min="0" required><br> <!--3-->
+                    Surface Area (sq. m): <input type="number" name="surfaceArea" value="0.0000282743" step="0.00000000000000001" min="0" required><br> <!--4-->
+                    Air Density (kg. / m^2): <input type="number" name="airDensity" value="1.225" step="0.0001" min="0" required><br> <!--5-->
+                    Hopup Applied: <select id="hopupApplied">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                    <br>
+                </form>
 
                 <button type="button" onclick='calculateTerminalEnergy(
                 document.getElementsByTagName("input")[0].value,
@@ -106,11 +115,11 @@
                 document.getElementsByTagName("input")[2].value,
                 document.getElementsByTagName("input")[5].value
                 )'>
-                    calculate
-                </button>
+                    Calculate
+                </button><br /><br />
 
-                <p id="MED"></p>
-                <p id="MuzzleEnergy"></p><br />
+                <b id="MED"></b><br />
+                <b id="MuzzleEnergy"></b><br /><br />
 
                 Common Projectiles<br /><br />
                 6mm BBs<br />
@@ -149,7 +158,17 @@
     '>
                     0.4g
                 </button>
-                <br /> <br />
+                <br />
+                Other<br />
+
+                <button type="button" onclick='
+    document.getElementsByTagName("input")[1].value = 0.00265676;
+    document.getElementsByTagName("input")[3].value = 0.6446727;
+    document.getElementsByTagName("input")[4].value = 0.000234302479231569;
+    '>
+                    68 cal. Reball
+                </button>
+                <br /><br />
 
                 v0.1.0 - ©2018 <a href="http://www.airsoftrnd.com">www.airsoftrnd.com</a>
             </td>
